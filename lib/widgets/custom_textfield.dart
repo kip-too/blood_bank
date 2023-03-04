@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
+  final ValueChanged<bool> onChanged;
   final Widget? suffixIcon;
+  final TextEditingController? controller;
 
   const CustomTextField({
     Key? key,
+    required this.onChanged,
     required this.labelText,
     required this.suffixIcon,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -16,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(7.0),
       child: TextField(
+        controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
           suffixIcon: suffixIcon,

@@ -5,6 +5,7 @@ import '../configs/themes/app_theme.dart';
 class CustomMaterialButton extends StatelessWidget {
   final Widget text;
   final VoidCallback onPressed;
+
   const CustomMaterialButton({
     Key? key,
     required this.onPressed,
