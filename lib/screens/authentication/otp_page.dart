@@ -15,7 +15,7 @@ class OTPPage extends StatefulWidget {
 }
 
 class OTPPageState extends State<OTPPage> {
-  late String code;
+  late String verificationId;
   final TextEditingController _otpController = TextEditingController();
 
   @override
@@ -39,9 +39,9 @@ class OTPPageState extends State<OTPPage> {
               ),
               const SizedBox(height: 16.0),
               TextField(
-                onChanged: (value) {
-                  code = value;
-                },
+                // onChanged: (value) {
+                //   verificationId = value;
+                // },
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
@@ -51,16 +51,18 @@ class OTPPageState extends State<OTPPage> {
               ),
               const SizedBox(height: 16.0),
               BlocListener<AuthenticationBloc, AuthenticationState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is SuccessAuthState) {
                     Navigator.pushNamed(context, HomeScreen.id);
+                    print('Naviagting to homescreen');
                   }
                 },
                 child: CustomMaterialButton(
-                    onPressed: () {
+                    onPressed: () async {
                       String otp = _otpController.text;
                       AuthenticationBloc authBloc = AuthenticationBloc();
-                      //Navigator.pushNamed(context, HomeScreen.id);
+                      authBloc.add(VerifyOTP(verificationId, otp));
+                      print('Verifying otp code: $otp');
                     },
                     text: const Text('Continue')),
               ),

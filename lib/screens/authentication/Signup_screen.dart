@@ -1,24 +1,50 @@
 import 'package:blood_bank/blocs/auth/authentication_bloc.dart';
+import 'package:blood_bank/blocs/userdata/user_bloc.dart';
 import 'package:blood_bank/configs/themes/app_theme.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../../models/user/user_info.dart';
 import 'otp_page.dart';
 
 class SignUpPage extends StatefulWidget {
   static String id = 'signup_screen';
+  final UserInfo userInfo;
 
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({Key? key, required this.userInfo}) : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _phoneNumberController = TextEditingController();
   bool showSpinner = false;
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final idNumberController = TextEditingController();
+  final mobileNumberController = TextEditingController();
+  final emailController = TextEditingController();
+  final genderController = TextEditingController();
+  final dateOfBirthController = TextEditingController();
+  final locationController = TextEditingController();
+  final bloodGroupController = TextEditingController();
+
+  late UserInfoBloc _userInfoBloc;
+  late AuthenticationBloc _authBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _userInfoBloc = UserInfoBloc();
+  }
+
+  @override
+  void dispose() {
+    _userInfoBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +61,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: <Widget>[
                       Expanded(
                         child: CustomTextField(
-                          controller: null,
-                          onChanged: (value) {},
+                          controller: firstNameController,
+                          onChanged: (value) {
+                            //firstName = value;
+                          },
                           labelText: 'First Name',
                           suffixIcon: null,
                         ),
@@ -46,7 +74,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       Expanded(
                         child: CustomTextField(
-                          controller: null,
+                          controller: lastNameController,
                           onChanged: (value) {},
                           labelText: 'Last Name',
                           suffixIcon: null,
@@ -58,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 15,
                   ),
                   CustomTextField(
-                      controller: null,
+                      controller: idNumberController,
                       onChanged: (value) {},
                       labelText: 'NID Number',
                       suffixIcon: null),
@@ -66,7 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 15,
                   ),
                   CustomTextField(
-                      controller: _phoneNumberController,
+                      controller: mobileNumberController,
                       onChanged: (value) {
                         //phoneNumber = value;
                       },
@@ -76,7 +104,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 15,
                   ),
                   CustomTextField(
-                      controller: null,
+                      controller: emailController,
                       onChanged: (value) {},
                       labelText: 'Email',
                       suffixIcon: null),
@@ -84,7 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: <Widget>[
                       Expanded(
                         child: CustomTextField(
-                          controller: null,
+                          controller: genderController,
                           onChanged: (value) {},
                           labelText: 'Gender',
                           suffixIcon: Icon(Icons.arrow_drop_down),
@@ -95,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       Expanded(
                         child: CustomTextField(
-                          controller: null,
+                          controller: dateOfBirthController,
                           onChanged: (value) {},
                           labelText: 'Date of Birth',
                           suffixIcon: Icon(Icons.calendar_month),
@@ -104,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ],
                   ),
                   CustomTextField(
-                      controller: null,
+                      controller: locationController,
                       onChanged: (value) {},
                       labelText: 'Location',
                       suffixIcon: null),
@@ -112,7 +140,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 15,
                   ),
                   CustomTextField(
-                    controller: null,
+                    controller: bloodGroupController,
                     onChanged: (value) {},
                     labelText: 'Blood Group',
                     suffixIcon: Icon(Icons.arrow_drop_down),
@@ -144,19 +172,46 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
+                    child: MultiBlocListener(
+                      listeners: [
                         BlocListener<AuthenticationBloc, AuthenticationState>(
-                      listener: (context, state) {
-                        if (state is OTPReceivedState) {
-                          Navigator.pushNamed(context, OTPPage.id);
-                        }
-                      },
+                          listener: (context, state) async {
+                            print('Authentication state changed: //');
+                            if (state is OTPReceivedState) {
+                              print('Received OTP, navigating to OTP page');
+                              // await Navigator.pushNamed(context, OTPPage.id);
+                            }
+                          },
+                        ),
+                        BlocListener<UserInfoBloc, UserInfoState>(
+                          listener: (context, state) {
+                            if (state is UserInfoSuccess) {
+                              Navigator.pushNamed(context, OTPPage.id);
+                            }
+                          },
+                        ),
+                      ],
                       child: CustomMaterialButton(
-                        onPressed: () {
-                          String phoneNumber = _phoneNumberController.text;
-                          AuthenticationBloc authBloc = AuthenticationBloc();
-                          authBloc.add(SendOTP(phoneNumber));
-                          // Navigator.pushNamed(context, OTPPage.id);
+                        onPressed: () async {
+                          // AuthenticationBloc authBloc = AuthenticationBloc();
+                          // authBloc.add(SendOTP(phoneNumber));
+                          // print('Sent OTP request for phone number: ');
+                          // await Navigator.pushNamed(context, OTPPage.id);
+                          // print('Received OTP, navigating to OTP page');
+                          String phoneNumber = mobileNumberController.text;
+                          UserInfo userInfo = UserInfo(
+                            firstName: firstNameController.text,
+                            lastName: lastNameController.text,
+                            idNumber: idNumberController.text,
+                            mobileNumber: mobileNumberController.text,
+                            email: emailController.text,
+                            gender: genderController.text,
+                            dateOfBirth: dateOfBirthController.text,
+                            location: locationController.text,
+                            bloodGroup: bloodGroupController.text,
+                          );
+                          _userInfoBloc.add(SaveUserData(userInfo));
+                          _authBloc.add(SendOTP(phoneNumber));
                         },
                         text: const Text(
                           'Sign Up',

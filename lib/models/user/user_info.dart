@@ -7,7 +7,7 @@ class UserInfo extends Equatable {
   final String mobileNumber;
   final String email;
   final String gender;
-  final DateTime dateOfBirth;
+  final String dateOfBirth;
   final String location;
   final String bloodGroup;
 
@@ -22,6 +22,20 @@ class UserInfo extends Equatable {
     required this.location,
     required this.bloodGroup,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'idNumber': idNumber,
+      'phoneNumber': mobileNumber,
+      'email': email,
+      'gender': gender,
+      'dateOfBirth': dateOfBirth,
+      'location': location,
+      'bloodGroup': bloodGroup,
+    };
+  }
 
   @override
   List<Object?> get props => [

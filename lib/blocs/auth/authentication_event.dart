@@ -17,15 +17,6 @@ class SendOTP extends AuthenticationEvent {
   List<Object> get props => [phoneNumber];
 }
 
-// class OTPReceived extends AuthenticationEvent {
-//   final String verificationId;
-//   final int? resendToken;
-
-//   const OTPReceived(this.verificationId, this.resendToken);
-//   @override
-//   List<Object?> get props => [verificationId, resendToken];
-// }
-
 class VerifyOTP extends AuthenticationEvent {
   final String verificationId;
   final String otp;
