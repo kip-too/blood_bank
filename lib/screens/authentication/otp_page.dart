@@ -1,10 +1,15 @@
 import 'package:blood_bank/configs/themes/app_theme.dart';
+import 'package:blood_bank/models/user/user_info.dart';
 import 'package:blood_bank/screens/exports_screens.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/auth/authentication_bloc.dart';
+import '../../blocs/userdata/user_bloc.dart';
+import '../../repositories/userrepsitory/user_repository_impl.dart';
+import '../../services/user_info_service.dart';
 
 class OTPPage extends StatefulWidget {
   static String id = 'otp_screen';
@@ -17,6 +22,21 @@ class OTPPage extends StatefulWidget {
 class OTPPageState extends State<OTPPage> {
   late String verificationId;
   final TextEditingController _otpController = TextEditingController();
+  AuthenticationBloc _authBloc = AuthenticationBloc();
+  late UserInfoBloc _userInfoBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = AuthenticationBloc();
+  }
+
+  @override
+  void dispose() {
+    _userInfoBloc.close();
+    _authBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +70,22 @@ class OTPPageState extends State<OTPPage> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              BlocListener<AuthenticationBloc, AuthenticationState>(
-                listener: (context, state) async {
-                  if (state is SuccessAuthState) {
-                    Navigator.pushNamed(context, HomeScreen.id);
-                    print('Naviagting to homescreen');
-                  }
-                },
+              MultiBlocListener(
+                listeners: [
+                  BlocListener<AuthenticationBloc, AuthenticationState>(
+                    listener: (context, state) async {
+                      if (state is SuccessAuthState) {
+                        Navigator.pushNamed(context, HomeScreen.id);
+                        print('Naviagting to homescreen');
+                      }
+                    },
+                  ),
+                ],
                 child: CustomMaterialButton(
                     onPressed: () async {
                       String otp = _otpController.text;
-                      AuthenticationBloc authBloc = AuthenticationBloc();
-                      authBloc.add(VerifyOTP(verificationId, otp));
-                      print('Verifying otp code: $otp');
+                      _authBloc.add(VerifyOTP(verificationId, otp));
+                      print('Verifying otp code: //');
                     },
                     text: const Text('Continue')),
               ),

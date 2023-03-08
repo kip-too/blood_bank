@@ -1,7 +1,11 @@
 import 'package:blood_bank/blocs/auth/authentication_bloc.dart';
 import 'package:blood_bank/blocs/userdata/user_bloc.dart';
 import 'package:blood_bank/configs/themes/app_theme.dart';
+import 'package:blood_bank/repositories/userrepsitory/user_repository.dart';
+import 'package:blood_bank/repositories/userrepsitory/user_repository_impl.dart';
+import 'package:blood_bank/services/user_info_service.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -11,9 +15,9 @@ import 'otp_page.dart';
 
 class SignUpPage extends StatefulWidget {
   static String id = 'signup_screen';
-  final UserInfo userInfo;
+  // final UserInfo userInfo;
 
-  const SignUpPage({Key? key, required this.userInfo}) : super(key: key);
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -37,12 +41,19 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
-    _userInfoBloc = UserInfoBloc();
+    _authBloc = AuthenticationBloc();
+    _userInfoBloc = UserInfoBloc(
+        firebaseUserInfoRepositoryImpl: FirebaseUserInfoRepositoryImpl(
+            firebaseUserInfoService: FirebaseUserInfoService(
+              firestore: FirebaseFirestore.instance,
+            ),
+            firestore: FirebaseFirestore.instance));
   }
 
   @override
   void dispose() {
     _userInfoBloc.close();
+    _authBloc.close();
     super.dispose();
   }
 
@@ -172,55 +183,53 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: MultiBlocListener(
-                      listeners: [
-                        BlocListener<AuthenticationBloc, AuthenticationState>(
-                          listener: (context, state) async {
-                            print('Authentication state changed: //');
-                            if (state is OTPReceivedState) {
-                              print('Received OTP, navigating to OTP page');
-                              // await Navigator.pushNamed(context, OTPPage.id);
-                            }
-                          },
-                        ),
-                        BlocListener<UserInfoBloc, UserInfoState>(
-                          listener: (context, state) {
-                            if (state is UserInfoSuccess) {
-                              Navigator.pushNamed(context, OTPPage.id);
-                            }
-                          },
-                        ),
-                      ],
-                      child: CustomMaterialButton(
-                        onPressed: () async {
-                          // AuthenticationBloc authBloc = AuthenticationBloc();
-                          // authBloc.add(SendOTP(phoneNumber));
-                          // print('Sent OTP request for phone number: ');
-                          // await Navigator.pushNamed(context, OTPPage.id);
-                          // print('Received OTP, navigating to OTP page');
-                          String phoneNumber = mobileNumberController.text;
-                          UserInfo userInfo = UserInfo(
-                            firstName: firstNameController.text,
-                            lastName: lastNameController.text,
-                            idNumber: idNumberController.text,
-                            mobileNumber: mobileNumberController.text,
-                            email: emailController.text,
-                            gender: genderController.text,
-                            dateOfBirth: dateOfBirthController.text,
-                            location: locationController.text,
-                            bloodGroup: bloodGroupController.text,
-                          );
-                          _userInfoBloc.add(SaveUserData(userInfo));
-                          _authBloc.add(SendOTP(phoneNumber));
+                    child: BlocProvider(
+                      create: (context) => AuthenticationBloc(),
+                      child:
+                          BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                        listener: (context, state) async {
+                          if (state is OTPReceivedState) {
+                            WidgetsBinding.instance!
+                                .addPostFrameCallback((_) async {
+                              await Navigator.pushNamed(context, OTPPage.id);
+                            });
+                          }
                         },
-                        text: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Manrope',
-                            fontSize: 20,
-                          ),
-                        ),
+                        builder: (context, state) {
+                          return CustomMaterialButton(
+                            onPressed: () async {
+                              String mobileNumber = mobileNumberController.text;
+                              AuthenticationBloc authBloc =
+                                  BlocProvider.of<AuthenticationBloc>(context);
+                              authBloc.add(SendOTP(mobileNumber));
+                              print(
+                                  'Sent OTP request for phone number:$mobileNumber ');
+                              _userInfoBloc.add(
+                                SaveUserInfo(
+                                  userInfo: UserInfo(
+                                    firstName: firstNameController.text,
+                                    lastName: lastNameController.text,
+                                    idNumber: idNumberController.text,
+                                    mobileNumber: mobileNumberController.text,
+                                    email: emailController.text,
+                                    gender: genderController.text,
+                                    dateOfBirth: dateOfBirthController.text,
+                                    location: locationController.text,
+                                    bloodGroup: bloodGroupController.text,
+                                  ),
+                                ),
+                              );
+                            },
+                            text: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Manrope',
+                                fontSize: 20,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),

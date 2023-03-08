@@ -1,11 +1,19 @@
 part of 'user_bloc.dart';
 
-abstract class UserInfoEvent {
+abstract class UserInfoEvent extends Equatable {
   const UserInfoEvent();
+
+  @override
+  List<Object> get props => [];
 }
 
-class SaveUserData extends UserInfoEvent {
+class SaveUserInfo extends UserInfoEvent {
   final UserInfo userInfo;
 
-  const SaveUserData(this.userInfo);
+  const SaveUserInfo({required this.userInfo});
+
+  @override
+  List<Object> get props => [userInfo];
 }
+
+class GetUserInfo extends UserInfoEvent {}

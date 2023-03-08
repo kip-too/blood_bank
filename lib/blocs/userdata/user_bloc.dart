@@ -4,24 +4,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../models/user/user_info.dart';
+import '../../repositories/userrepsitory/user_repository_impl.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
 
 class UserInfoBloc extends Bloc<UserInfoEvent, UserInfoState> {
-  final CollectionReference userInfoCollection =
-      FirebaseFirestore.instance.collection('user_info');
-  UserInfoBloc() : super(InitialUserInfoState()) {
-    on<SaveUserData>((event, emit) async {
-      emit(UserInfoLoadingState());
+  final FirebaseUserInfoRepositoryImpl firebaseUserInfoRepositoryImpl;
+
+  UserInfoBloc({required this.firebaseUserInfoRepositoryImpl})
+      : super(UserInfoInitial()) {
+    on<SaveUserInfo>((event, emit) async {
+      emit(UserInfoSaveSuccess());
       try {
-        UserInfo? userInfo;
-        await userInfoCollection.doc().set(event.userInfo.toMap());
-        if (userInfo != null) {
-          emit(UserInfoSuccess(userInfo));
-        }
+        await firebaseUserInfoRepositoryImpl.saveUserInfo(event.userInfo);
       } catch (e) {
-        emit(InitialUserInfoState());
+        UserInfoSaveFailure(error: e.toString());
+      }
+    });
+    on<GetUserInfo>((event, emit) async {
+      try {
+        final userInfo = await firebaseUserInfoRepositoryImpl.getUserInfo();
+        emit(UserInfoLoadSuccess(userInfo: userInfo));
+      } catch (e) {
+        UserInfoLoadFailure(error: e.toString());
       }
     });
   }

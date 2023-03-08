@@ -4,17 +4,36 @@ abstract class UserInfoState extends Equatable {
   const UserInfoState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class InitialUserInfoState extends UserInfoState {}
+class UserInfoInitial extends UserInfoState {}
 
-class UserInfoLoadingState extends UserInfoState {}
+class UserInfoSaveSuccess extends UserInfoState {}
 
-class UserInfoSuccess extends UserInfoState {
+class UserInfoSaveFailure extends UserInfoState {
+  final String error;
+
+  const UserInfoSaveFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+}
+
+class UserInfoLoadSuccess extends UserInfoState {
   final UserInfo userInfo;
 
-  const UserInfoSuccess(this.userInfo);
+  const UserInfoLoadSuccess({required this.userInfo});
+
   @override
-  List<Object?> get props => [userInfo];
+  List<Object> get props => [userInfo];
+}
+
+class UserInfoLoadFailure extends UserInfoState {
+  final String error;
+
+  const UserInfoLoadFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
 }
