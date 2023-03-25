@@ -28,7 +28,7 @@ class SearchDonorScreenState extends State<SearchDonorScreen> {
               left: 0,
               right: 0,
               child: Container(
-                height: MediaQuery.of(context).size.height / 2,
+                height: MediaQuery.of(context).size.height / 3.2,
                 decoration: const BoxDecoration(
                   color: CustomColors.backgroundColor,
                   borderRadius: BorderRadius.vertical(

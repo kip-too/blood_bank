@@ -14,7 +14,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     return const GoogleMap(
       initialCameraPosition: CameraPosition(
         target: LatLng(1.3939, 36.7442),
-        zoom: 16,
+        zoom: 10,
       ),
     );
   }

@@ -30,17 +30,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(
-            Icons.rss_feed,
+            Icons.menu,
             color: CustomColors.secondaryColor,
           ),
-          label: 'Feed',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.chat,
-            color: CustomColors.secondaryColor,
-          ),
-          label: 'Chat',
+          label: 'Menu',
         ),
         BottomNavigationBarItem(
           icon: Icon(
@@ -51,17 +44,17 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(
-            Icons.account_circle,
+            Icons.favorite,
             color: CustomColors.secondaryColor,
           ),
-          label: 'Account',
+          label: 'Donate',
         ),
         BottomNavigationBarItem(
           icon: Icon(
-            Icons.menu,
+            Icons.request_page,
             color: CustomColors.secondaryColor,
           ),
-          label: 'Menu',
+          label: 'Request',
         ),
       ],
       currentIndex: _selectedIndex,

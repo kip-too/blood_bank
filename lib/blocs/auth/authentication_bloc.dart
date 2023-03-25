@@ -32,6 +32,7 @@ class AuthenticationBloc
 
     on<VerifyOTP>((event, emit) async {
       emit(LoadingAuthState());
+      
       try {
         final PhoneAuthCredential credential = PhoneAuthProvider.credential(
           verificationId: event.verificationId,
