@@ -1,10 +1,19 @@
+//import 'package:blood_bank/blocs/userdata/user_bloc.dart';
 import 'package:blood_bank/configs/themes/app_theme.dart';
+import 'package:blood_bank/repositories/userrepsitory/user_repository.dart';
+import 'package:blood_bank/repositories/userrepsitory/user_repository_impl.dart';
+import 'package:blood_bank/services/user_info_service.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../../models/user/user_info.dart';
+import 'otp_page.dart';
 
 class SignUpPage extends StatefulWidget {
   static String id = 'signup_screen';
+  // final UserInfo userInfo;
 
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -22,6 +31,27 @@ class _SignUpPageState extends State<SignUpPage> {
   final dateOfBirthController = TextEditingController();
   final locationController = TextEditingController();
   final bloodGroupController = TextEditingController();
+
+  //late UserInfoBloc _userInfoBloc;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _authBloc = AuthenticationBloc();
+  //   _userInfoBloc = UserInfoBloc(
+  //       firebaseUserInfoRepositoryImpl: FirebaseUserInfoRepositoryImpl(
+  //           firebaseUserInfoService: FirebaseUserInfoService(
+  //             firestore: FirebaseFirestore.instance,
+  //           ),
+  //           firestore: FirebaseFirestore.instance));
+  // }
+
+  // @override
+  // void dispose() {
+  //   //_userInfoBloc.close();
+  //   _authBloc.close();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +178,25 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: CustomMaterialButton(
                   onPressed: () async {
+                    String mobileNumber = mobileNumberController.text;
+
+                    print('Sent OTP request for phone number:$mobileNumber ');
+                    // _userInfoBloc.add(
+                    //   SaveUserInfo(
+                    //     userInfo: UserInfo(
+                    //       firstName: firstNameController.text,
+                    //       lastName: lastNameController.text,
+                    //       idNumber: idNumberController.text,
+                    //       mobileNumber: mobileNumberController.text,
+                    //       email: emailController.text,
+                    //       gender: genderController.text,
+                    //       dateOfBirth: dateOfBirthController.text,
+                    //       location: locationController.text,
+                    //       bloodGroup: bloodGroupController.text,
+                    //     ),
+                    //   ),
+                    // );
+                    Navigator.pushNamed(context, OTPPage.id);
                   },
                   text: const Text(
                     'Sign Up',
