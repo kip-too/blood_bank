@@ -1,22 +1,22 @@
-import 'package:blood_bank/keys/keys.dart';
-import 'package:blood_bank/screens/authentication/Signup_screen.dart';
+import 'package:blood_bank/screens/authentication/phone_sign_up.dart';
+import 'package:blood_bank/screens/exports_screens.dart';
 import 'package:blood_bank/services/auth_service.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
 import 'package:flutter/material.dart';
 
-class PhoneSignUp extends StatefulWidget {
-  static String id = "Phone_SignUp";
-  const PhoneSignUp({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  static String id = "LoginScreen";
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<PhoneSignUp> createState() => _PhoneSignUpState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _PhoneSignUpState extends State<PhoneSignUp> {
+class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
-  final Auth _auth = Auth();
   bool _isLoading = false;
+  final Auth _auth = Auth();
 
   @override
   void initState() {
@@ -50,25 +50,33 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                       setState(() {
                         _isLoading = true;
                       });
-                      String? signUpResult = await _auth.signUp(
+                      String? loginResult = await _auth.logIn(
                         _emailController.text,
                         _passwordController.text,
                       );
                       setState(() {
                         _isLoading = false;
                       });
-                      if (signUpResult == null) {
-                        Navigator.pushNamed(context, SignUpPage.id);
+                      if (loginResult == null) {
+                        Navigator.pushNamed(context, HomeScreen.id);
                       } else {
+                        // Login failed, show error message
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(signUpResult),
-                            backgroundColor: Colors.red,
+                            content: Text(loginResult),
+                            duration: Duration(seconds: 3),
                           ),
                         );
                       }
                     },
-              child: _isLoading ? CircularProgressIndicator() : Text('Sign Up'),
+              child: _isLoading ? CircularProgressIndicator() : Text('Login'),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, PhoneSignUp.id);
+              },
+              child: Text('Don\'t have an account? Sign up'),
             ),
           ],
         ),

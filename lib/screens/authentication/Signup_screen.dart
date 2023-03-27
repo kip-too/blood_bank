@@ -2,6 +2,7 @@
 import 'package:blood_bank/configs/themes/app_theme.dart';
 import 'package:blood_bank/repositories/userrepsitory/user_repository.dart';
 import 'package:blood_bank/repositories/userrepsitory/user_repository_impl.dart';
+import 'package:blood_bank/screens/exports_screens.dart';
 import 'package:blood_bank/services/user_info_service.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,27 +32,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final dateOfBirthController = TextEditingController();
   final locationController = TextEditingController();
   final bloodGroupController = TextEditingController();
-
-  //late UserInfoBloc _userInfoBloc;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _authBloc = AuthenticationBloc();
-  //   _userInfoBloc = UserInfoBloc(
-  //       firebaseUserInfoRepositoryImpl: FirebaseUserInfoRepositoryImpl(
-  //           firebaseUserInfoService: FirebaseUserInfoService(
-  //             firestore: FirebaseFirestore.instance,
-  //           ),
-  //           firestore: FirebaseFirestore.instance));
-  // }
-
-  // @override
-  // void dispose() {
-  //   //_userInfoBloc.close();
-  //   _authBloc.close();
-  //   super.dispose();
-  // }
+  bool _donor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -154,20 +135,14 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               Row(
                 children: <Widget>[
-                  const Icon(
-                    Icons.check_box,
-                    color: CustomColors.primaryColor,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  RichText(
-                    text: const TextSpan(
-                      text: 'Sign up as donor',
-                      style: TextStyle(
-                        color: CustomColors.textColor,
-                      ),
-                    ),
+                  Checkbox(
+                    value: _donor,
+                    onChanged: (bool? newValue) {
+                      setState(() {
+                        _donor = newValue!;
+                      });
+                    },
+                    
                   ),
                 ],
               ),
@@ -181,25 +156,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     String mobileNumber = mobileNumberController.text;
 
                     print('Sent OTP request for phone number:$mobileNumber ');
-                    // _userInfoBloc.add(
-                    //   SaveUserInfo(
-                    //     userInfo: UserInfo(
-                    //       firstName: firstNameController.text,
-                    //       lastName: lastNameController.text,
-                    //       idNumber: idNumberController.text,
-                    //       mobileNumber: mobileNumberController.text,
-                    //       email: emailController.text,
-                    //       gender: genderController.text,
-                    //       dateOfBirth: dateOfBirthController.text,
-                    //       location: locationController.text,
-                    //       bloodGroup: bloodGroupController.text,
-                    //     ),
-                    //   ),
-                    // );
-                    Navigator.pushNamed(context, OTPPage.id);
+
+                    Navigator.pushNamed(context, HomeScreen.id);
                   },
                   text: const Text(
-                    'Sign Up',
+                    'Upload',
                     style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Manrope',
@@ -212,12 +173,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    RichText(
-                        text: const TextSpan(
-                            text: 'Already have an account?',
-                            style: TextStyle(
-                              color: CustomColors.textColor,
-                            ))),
                     InkWell(
                       onTap: () {},
                       child: RichText(

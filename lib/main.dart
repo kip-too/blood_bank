@@ -1,4 +1,5 @@
 import 'package:blood_bank/repositories/authrepo/auth_repo.dart';
+import 'package:blood_bank/screens/authentication/login_page.dart';
 import 'package:blood_bank/screens/authentication/phone_sign_up.dart';
 import 'package:blood_bank/screens/request/create_request.dart';
 import 'package:blood_bank/screens/searchdonor/search_donor.dart';
@@ -26,11 +27,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: PhoneSignUp.id,
+      initialRoute: SignUpPage.id,
       routes: {
         PhoneSignUp.id: (context) => const PhoneSignUp(),
+        LoginScreen.id: (context) => const LoginScreen(),
         SignUpPage.id: (context) => const SignUpPage(),
-        OTPPage.id: (context) => const OTPPage(),
         HomeScreen.id: (context) => const HomeScreen(),
         SearchDonorScreen.id: (context) => const SearchDonorScreen(),
         CreateRequestPage.id: (context) => const CreateRequestPage(),
