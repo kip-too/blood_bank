@@ -12,10 +12,12 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   @override
   Widget build(BuildContext context) {
     return const GoogleMap(
+      mapType: MapType.normal,
       initialCameraPosition: CameraPosition(
         target: LatLng(1.3939, 36.7442),
-        zoom: 10,
+        zoom: 14,
       ),
+
     );
   }
 }

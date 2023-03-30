@@ -1,3 +1,5 @@
+import 'package:blood_bank/configs/images/urls.dart';
+import 'package:blood_bank/configs/themes/app_theme.dart';
 import 'package:blood_bank/screens/authentication/phone_sign_up.dart';
 import 'package:blood_bank/screens/exports_screens.dart';
 import 'package:blood_bank/services/auth_service.dart';
@@ -31,6 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         body: Column(
           children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(image:AssetImage("assets/images/logo.jpeg"),
+                  ),
+                ),
+              ),
+            ),
+
+
             CustomTextField(
               onChanged: (value) {},
               labelText: 'Email',
@@ -43,7 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
               suffixIcon: Icon(Icons.password),
               controller: _passwordController,
             ),
+
+
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CustomColors.primaryColor,// Set button color to red
+              ),
               onPressed: _isLoading
                   ? null
                   : () async {
@@ -64,19 +84,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(loginResult),
-                            duration: Duration(seconds: 3),
+                            duration: const Duration(seconds: 3),
                           ),
                         );
                       }
                     },
-              child: _isLoading ? CircularProgressIndicator() : Text('Login'),
+              child: _isLoading ? const CircularProgressIndicator() : const Text('Login'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, PhoneSignUp.id);
               },
-              child: Text('Don\'t have an account? Sign up'),
+              child: const Text('Don\'t have an account? Sign up',
+                style:TextStyle(
+                  color: CustomColors.textColor,
+                  fontFamily: 'Manrope'
+                ) ,
+              ),
             ),
           ],
         ),

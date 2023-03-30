@@ -1,28 +1,18 @@
-//import 'package:blood_bank/blocs/userdata/user_bloc.dart';
-import 'package:blood_bank/configs/themes/app_theme.dart';
-import 'package:blood_bank/repositories/userrepsitory/user_repository.dart';
-import 'package:blood_bank/repositories/userrepsitory/user_repository_impl.dart';
 import 'package:blood_bank/screens/exports_screens.dart';
-import 'package:blood_bank/services/user_info_service.dart';
 import 'package:blood_bank/widgets/export_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-import '../../models/user/user_info.dart';
-import 'otp_page.dart';
+class EnterUserData extends StatefulWidget {
+  static String id = 'Enter_user_data';
 
-class SignUpPage extends StatefulWidget {
-  static String id = 'signup_screen';
-  // final UserInfo userInfo;
-
-  const SignUpPage({Key? key}) : super(key: key);
+  const EnterUserData({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<EnterUserData> createState() => _EnterUserDataState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _EnterUserDataState extends State<EnterUserData> {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final idNumberController = TextEditingController();
@@ -33,6 +23,44 @@ class _SignUpPageState extends State<SignUpPage> {
   final locationController = TextEditingController();
   final bloodGroupController = TextEditingController();
   bool _donor = false;
+  bool _saving = false;
+
+
+  Future<void> _saveUserData() async {
+    setState(() {
+      _saving = true;
+    });
+
+    final firstName = firstNameController.text;
+    final lastName = lastNameController.text;
+    final idNumber = idNumberController.text;
+    final mobileNumber = mobileNumberController.text;
+    final email = emailController.text;
+    final gender = genderController.text;
+    final dateOfBirth = dateOfBirthController.text;
+    final location = locationController.text;
+    final bloodGroup = bloodGroupController.text;
+    final donor = _donor;
+
+    final data = {
+      'firstName': firstName,
+      'lastName': lastName,
+      'idNumber': idNumber,
+      'mobileNumber': mobileNumber,
+      'email': email,
+      'gender': gender,
+      'dateOfBirth': dateOfBirth,
+      'location': location,
+      'bloodGroup': bloodGroup,
+      'donor': donor,
+    };
+
+    await FirebaseFirestore.instance.collection('userinfo').add(data);
+
+    setState(() {
+      _saving = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               CustomTextField(
                   controller: mobileNumberController,
-                  onChanged: (value) {
-                    //phoneNumber = value;
-                  },
+                  onChanged: (value) {},
                   labelText: 'Mobile Phone Number',
                   suffixIcon: null),
               const SizedBox(
@@ -100,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: genderController,
                       onChanged: (value) {},
                       labelText: 'Gender',
-                      suffixIcon: Icon(Icons.arrow_drop_down),
+                      suffixIcon: const Icon(Icons.arrow_drop_down),
                     ),
                   ),
                   const SizedBox(
@@ -111,7 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       controller: dateOfBirthController,
                       onChanged: (value) {},
                       labelText: 'Date of Birth',
-                      suffixIcon: Icon(Icons.calendar_month),
+                      suffixIcon: const Icon(Icons.calendar_month),
                     ),
                   ),
                 ],
@@ -128,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: bloodGroupController,
                 onChanged: (value) {},
                 labelText: 'Blood Group',
-                suffixIcon: Icon(Icons.arrow_drop_down),
+                suffixIcon: const Icon(Icons.arrow_drop_down),
               ),
               const SizedBox(
                 height: 15,
@@ -142,7 +168,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         _donor = newValue!;
                       });
                     },
-                    
                   ),
                 ],
               ),
@@ -153,11 +178,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: CustomMaterialButton(
                   onPressed: () async {
-                    String mobileNumber = mobileNumberController.text;
-
-                    print('Sent OTP request for phone number:$mobileNumber ');
+                    await _saveUserData();
 
                     Navigator.pushNamed(context, HomeScreen.id);
+                    if (_saving) // Only show the progress indicator if the flag is set
+                      CircularProgressIndicator();
                   },
                   text: const Text(
                     'Upload',
@@ -167,24 +192,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       fontSize: 20,
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {},
-                      child: RichText(
-                        text: const TextSpan(
-                          text: 'Sign In',
-                          style: TextStyle(
-                            color: CustomColors.textColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ]),
